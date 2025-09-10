@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace EmbeddedDevice_FAN
 {
@@ -8,6 +9,7 @@ namespace EmbeddedDevice_FAN
         private decimal _pendingSpeed;
         private bool isRunning = false;
         private Storyboard spinStoryboard;
+        private DispatcherTimer _speedTimer;
 
         public MainWindow()
         {
@@ -15,7 +17,15 @@ namespace EmbeddedDevice_FAN
 
             // Get storyboard from resources
             spinStoryboard = (Storyboard)this.Resources["SpinFan"];
-            
+            _speedTimer = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMilliseconds(500),
+            };
+            _speedTimer.Tick += (_, _) =>
+            {
+                _speedTimer.Stop();
+                LogMessage($"Speed set to {_pendingSpeed:0.00}");
+            };
         }
 
         private void LogMessage(string message)
@@ -31,7 +41,6 @@ namespace EmbeddedDevice_FAN
 
         private void Btn_OnOff_Click(object sender, RoutedEventArgs e)
         {
-
             if (!isRunning)
             {
                 LogMessage("Started");
@@ -73,7 +82,10 @@ namespace EmbeddedDevice_FAN
                     // Restart storyboard with new speed
                     spinStoryboard.Begin(this, true);
                 }
-                LogMessage($"Speed set to {e.NewValue:0.00}");
+
+                _pendingSpeed = (decimal)e.NewValue; // Explicit conversion to fix CS0266
+                _speedTimer.Stop();
+                _speedTimer.Start();
             }
         }
     }
