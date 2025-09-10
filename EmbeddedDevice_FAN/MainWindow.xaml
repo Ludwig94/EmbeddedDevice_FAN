@@ -34,6 +34,7 @@
 
         <!-- Buttons -->
         <StackPanel Grid.Row="1">
+            <Slider x:Name="Slider_Speed" Margin="30 20" />
             <Button x:Name="Btn_OnOff" Style="{StaticResource btn-primary}" Content="START" Click="Btn_OnOff_Click" />
         </StackPanel>
     </Grid>

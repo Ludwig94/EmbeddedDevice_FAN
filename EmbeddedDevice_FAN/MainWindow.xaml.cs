@@ -27,8 +27,18 @@ namespace EmbeddedDevice_FAN
 
         private void Btn_OnOff_Click(object sender, RoutedEventArgs e)
         {
-            ToggleRunningState();
+            ToggleRunningState(); 
 
+            if (_isRunning) //funkar ej än
+            {
+                Btn_OnOff.Content = "STOP";
+                    _rotatingFan!.Begin();
+            }
+            else
+            {
+                Btn_OnOff.Content = "START";
+                    _rotatingFan!.Pause();
+            }
             if (_isRunning)
             {
                 _rotatingFan?.Begin(this, true); // Start the fan animation
