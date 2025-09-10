@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -7,6 +9,7 @@ namespace EmbeddedDevice_FAN
 {
     public partial class MainWindow : Window
     {
+        private string _logFilePath = "";
         private decimal _pendingSpeed;
         private bool isRunning = false;
         private  Storyboard spinStoryboard;
@@ -16,12 +19,10 @@ namespace EmbeddedDevice_FAN
         public MainWindow()
         {
             InitializeComponent();
-            Initialize();
-
-           
+            InitializeFeatures();  
         }
 
-        private void Initialize()
+        private void InitializeFeatures()
         {
             // Get storyboard from resources
             spinStoryboard = (Storyboard)this.Resources["SpinFan"];
@@ -36,13 +37,27 @@ namespace EmbeddedDevice_FAN
             };
 
             _eventLog = [];
+            LB_EventLog.ItemsSource = _eventLog;
+
+            var appDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MainApp");
+            Directory.CreateDirectory(appDir);
+            _logFilePath = Path.Combine(appDir, "eventlog.log");
 
         }
 
         private void LogMessage(string message)
         {
             string line = $@"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : {message}";
-            LB_EventLog.Items.Add(line);
+            _eventLog?.Add(line);
+
+            try
+            {
+                File.AppendAllText(_logFilePath, line + Environment.NewLine);
+            }
+            catch 
+            {
+
+            }
 
             if (LB_EventLog.Items.Count > 0)
             {
