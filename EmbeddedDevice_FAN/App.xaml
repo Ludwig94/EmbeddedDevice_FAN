@@ -4,7 +4,19 @@
              xmlns:local="clr-namespace:EmbeddedDevice_FAN"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <FontFamily x:Key="fa-solid">/Fonts/Solid-900.otf#Font Awesome 7 Free Solid</FontFamily>
 
+        <!-- Fan Icon Style -->
+        <Style x:Key="fan-icon" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource fa-solid}" />
+            <Setter Property="Text" Value="&#xf863;" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="SlateGray" />
+            <Setter Property="FontSize" Value="72" />
+        </Style>
+
+        <!-- Button Primary Style -->
         <Style x:Key="btn-primary" TargetType="Button">
             <Setter Property="Background" Value="SlateGray" />
             <Setter Property="Foreground" Value="White" />
@@ -13,13 +25,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border  CornerRadius="4" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/> 
+                        <Border CornerRadius="4" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        
                     </ControlTemplate>
-
-                    <!--<VisualStateManager></VisualStateManager>-->
                 </Setter.Value>
             </Setter>
 
@@ -27,10 +36,8 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="DarkSlateGray" />
                     <Setter Property="Cursor" Value="Hand" />
-
-                    <!--<Trigger.EnterActions></Trigger.EnterActions>-->
                 </Trigger>
-                <Trigger Property="IsPressed" Value="True" >
+                <Trigger Property="IsPressed" Value="True">
                     <Setter Property="Background" Value="Black" />
                 </Trigger>
             </Style.Triggers>

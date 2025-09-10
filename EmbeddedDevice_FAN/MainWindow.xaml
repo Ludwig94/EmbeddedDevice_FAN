@@ -13,8 +13,12 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Fan Icon -->
+        <TextBlock Grid.Row="0" Style="{StaticResource fan-icon}" />
+
+        <!-- Buttons -->
         <StackPanel Grid.Row="1">
-            <Button x:Name="Btn_OnOff" Style="{StaticResource btn-primary}" Content="START" Click="Btn_OnOff_Click"  />
+            <Button x:Name="Btn_OnOff" Style="{StaticResource btn-primary}" Content="START" Click="Btn_OnOff_Click" />
         </StackPanel>
     </Grid>
 </Window>
