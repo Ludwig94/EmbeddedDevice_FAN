@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -17,23 +18,27 @@ namespace EmbeddedDevice_FAN
     public partial class MainWindow : Window
     {
         private bool _isRunning = false;
+        private Storyboard? _rotatingFan;
         public MainWindow()
         {
-            InitializeComponent(); //kan bara få fram Btn (knappen) i denna pga Mainwindow initializecompontent
+            InitializeComponent();
+            _rotatingFan = ((BeginStoryboard)FindResource("sb-rotate-fan")).Storyboard;
         }
 
         private void Btn_OnOff_Click(object sender, RoutedEventArgs e)
         {
+            ToggleRunningState();
 
-            //if (!_isRunning)
-            //    _isRunning = true;
-            //else 
-            //    _isRunning = false
-            //    
-            ToggleRunningState(); //bättre
-
-
+            if (_isRunning)
+            {
+                _rotatingFan?.Begin(this, true); // Start the fan animation
+            }
+            else
+            {
+                _rotatingFan?.Stop(); // Stop the fan animation
+            }
         }
+
         private void ToggleRunningState()
         {
             if (!_isRunning)

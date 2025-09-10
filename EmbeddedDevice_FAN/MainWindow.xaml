@@ -7,6 +7,18 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="400" Width="250">
+
+    <Window.Resources>
+        <BeginStoryboard x:Key="sb-rotate-fan">
+            <Storyboard x:Name="SpinFan" RepeatBehavior="Forever" >
+                <DoubleAnimation Storyboard.TargetName="Rotation"
+                             Storyboard.TargetProperty="Angle"
+                             From="0"
+                             To="360"
+                             Duration="0:0:1"/> <!--roterar 360grader per 1 sekund-->
+            </Storyboard>
+        </BeginStoryboard>
+    </Window.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -14,7 +26,11 @@
         </Grid.RowDefinitions>
 
         <!-- Fan Icon -->
-        <TextBlock Grid.Row="0" Style="{StaticResource fan-icon}" />
+        <TextBlock Grid.Row="0" RenderTransformOrigin="0.5 0.5" Style="{StaticResource fan-icon}">
+            <TextBlock.RenderTransform>
+            <RotateTransform x:Name="Rotation" Angle="0" />
+        </TextBlock.RenderTransform>
+        </TextBlock>
 
         <!-- Buttons -->
         <StackPanel Grid.Row="1">
