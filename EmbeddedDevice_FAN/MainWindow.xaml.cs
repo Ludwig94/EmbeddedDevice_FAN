@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -37,12 +38,12 @@ namespace EmbeddedDevice_FAN
             };
 
             _eventLog = [];
-            LB_EventLog.ItemsSource = _eventLog;
+            LB_EventLog.ItemsSource = _eventLog; //ska ta bort den
 
-            var appDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MainApp");
+            var appDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "EmbeddedDevice");
             Directory.CreateDirectory(appDir);
             _logFilePath = Path.Combine(appDir, "eventlog.log");
-
+            //C: \Users\klope\AppData\Local\EmbeddedDevice här finns log filen
         }
 
         private void LogMessage(string message)
