@@ -43,6 +43,8 @@
                     Style="{StaticResource btn-primary}"
                     Content="START"
                     Click="Btn_OnOff_Click"/>
+
+            <ListBox x:Name="LB_EventLog" Height="100" Margin="0 10 0 0" />
         </StackPanel>
     </Grid>
 </Window>

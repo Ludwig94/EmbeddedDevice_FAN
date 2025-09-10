@@ -5,6 +5,7 @@ namespace EmbeddedDevice_FAN
 {
     public partial class MainWindow : Window
     {
+        private decimal _pendingSpeed;
         private bool isRunning = false;
         private Storyboard spinStoryboard;
 
@@ -14,18 +15,33 @@ namespace EmbeddedDevice_FAN
 
             // Get storyboard from resources
             spinStoryboard = (Storyboard)this.Resources["SpinFan"];
+            
+        }
+
+        private void LogMessage(string message)
+        {
+            string line = $@"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : {message}";
+            LB_EventLog.Items.Add(line);
+
+            if (LB_EventLog.Items.Count > 0)
+            {
+                LB_EventLog.ScrollIntoView(LB_EventLog.Items[LB_EventLog.Items.Count - 1]);
+            }
         }
 
         private void Btn_OnOff_Click(object sender, RoutedEventArgs e)
         {
+
             if (!isRunning)
             {
+                LogMessage("Started");
                 spinStoryboard.Begin(this, true); // Start animation
                 Btn_OnOff.Content = "STOP";
                 isRunning = true;
             }
             else
             {
+                LogMessage("Stopped");
                 spinStoryboard.Stop(this); // Stop animation
                 Btn_OnOff.Content = "START";
                 isRunning = false;
@@ -57,6 +73,7 @@ namespace EmbeddedDevice_FAN
                     // Restart storyboard with new speed
                     spinStoryboard.Begin(this, true);
                 }
+                LogMessage($"Speed set to {e.NewValue:0.00}");
             }
         }
     }
