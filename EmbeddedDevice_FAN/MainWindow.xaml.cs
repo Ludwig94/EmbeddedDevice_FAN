@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
@@ -8,13 +9,20 @@ namespace EmbeddedDevice_FAN
     {
         private decimal _pendingSpeed;
         private bool isRunning = false;
-        private Storyboard spinStoryboard;
-        private DispatcherTimer _speedTimer;
+        private  Storyboard spinStoryboard;
+        private DispatcherTimer? _speedTimer;
+        private  ObservableCollection<string>? _eventLog;
 
         public MainWindow()
         {
             InitializeComponent();
+            Initialize();
 
+           
+        }
+
+        private void Initialize()
+        {
             // Get storyboard from resources
             spinStoryboard = (Storyboard)this.Resources["SpinFan"];
             _speedTimer = new DispatcherTimer()
@@ -26,6 +34,9 @@ namespace EmbeddedDevice_FAN
                 _speedTimer.Stop();
                 LogMessage($"Speed set to {_pendingSpeed:0.00}");
             };
+
+            _eventLog = [];
+
         }
 
         private void LogMessage(string message)
