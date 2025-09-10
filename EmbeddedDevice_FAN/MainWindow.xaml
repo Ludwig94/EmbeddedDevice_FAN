@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="1">
-            <Button x:Name="Btn_OnOff" Content="START" Click="Btn_OnOff_Click"/>
+            <Button x:Name="Btn_OnOff" Style="{StaticResource btn-primary}" Content="START" Click="Btn_OnOff_Click"  />
         </StackPanel>
     </Grid>
 </Window>

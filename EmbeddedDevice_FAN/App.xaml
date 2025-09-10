@@ -4,6 +4,36 @@
              xmlns:local="clr-namespace:EmbeddedDevice_FAN"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <Style x:Key="btn-primary" TargetType="Button">
+            <Setter Property="Background" Value="SlateGray" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border  CornerRadius="4" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/> 
+                        </Border>
+                        
+                    </ControlTemplate>
+
+                    <!--<VisualStateManager></VisualStateManager>-->
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="DarkSlateGray" />
+                    <Setter Property="Cursor" Value="Hand" />
+
+                    <!--<Trigger.EnterActions></Trigger.EnterActions>-->
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True" >
+                    <Setter Property="Background" Value="Black" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application>
