@@ -9,16 +9,15 @@
         Title="MainWindow" Height="400" Width="250">
 
     <Window.Resources>
-        <BeginStoryboard x:Key="sb-rotate-fan">
-            <Storyboard x:Name="SpinFan" RepeatBehavior="Forever" >
-                <DoubleAnimation Storyboard.TargetName="Rotation"
+        <Storyboard x:Key="SpinFan" x:Name="SpinFan" RepeatBehavior="Forever">
+            <DoubleAnimation x:Name="RotateAnim"
+                             Storyboard.TargetName="Rotation"
                              Storyboard.TargetProperty="Angle"
-                             From="0"
-                             To="360"
-                             Duration="0:0:1"/> <!--roterar 360grader per 1 sekund-->
-            </Storyboard>
-        </BeginStoryboard>
+                             From="0" To="360"
+                             Duration="0:0:1"/>
+        </Storyboard>
     </Window.Resources>
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -28,14 +27,22 @@
         <!-- Fan Icon -->
         <TextBlock Grid.Row="0" RenderTransformOrigin="0.5 0.5" Style="{StaticResource fan-icon}">
             <TextBlock.RenderTransform>
-            <RotateTransform x:Name="Rotation" Angle="0" />
-        </TextBlock.RenderTransform>
+                <RotateTransform x:Name="Rotation" Angle="0" />
+            </TextBlock.RenderTransform>
         </TextBlock>
 
         <!-- Buttons -->
         <StackPanel Grid.Row="1">
-            <Slider x:Name="Slider_Speed" Margin="30 20" />
-            <Button x:Name="Btn_OnOff" Style="{StaticResource btn-primary}" Content="START" Click="Btn_OnOff_Click" />
+            <Slider x:Name="Slider_Speed"
+                    Minimum="0.2" Maximum="5"
+                    Value="1"
+                    TickFrequency="0.1"
+                    Margin="30 20"
+                    ValueChanged="Slider_Speed_ValueChanged"/>
+            <Button x:Name="Btn_OnOff"
+                    Style="{StaticResource btn-primary}"
+                    Content="START"
+                    Click="Btn_OnOff_Click"/>
         </StackPanel>
     </Grid>
 </Window>

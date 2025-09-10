@@ -1,65 +1,62 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
+﻿using System.Windows;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace EmbeddedDevice_FAN
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private bool _isRunning = false;
-        private Storyboard? _rotatingFan;
+        private bool isRunning = false;
+        private Storyboard spinStoryboard;
+
         public MainWindow()
         {
             InitializeComponent();
-            _rotatingFan = ((BeginStoryboard)FindResource("sb-rotate-fan")).Storyboard;
+
+            // Get storyboard from resources
+            spinStoryboard = (Storyboard)this.Resources["SpinFan"];
         }
 
         private void Btn_OnOff_Click(object sender, RoutedEventArgs e)
         {
-            ToggleRunningState(); 
-
-            if (_isRunning) //funkar ej än
+            if (!isRunning)
             {
+                spinStoryboard.Begin(this, true); // Start animation
                 Btn_OnOff.Content = "STOP";
-                    _rotatingFan!.Begin();
+                isRunning = true;
             }
             else
             {
+                spinStoryboard.Stop(this); // Stop animation
                 Btn_OnOff.Content = "START";
-                    _rotatingFan!.Pause();
-            }
-            if (_isRunning)
-            {
-                _rotatingFan?.Begin(this, true); // Start the fan animation
-            }
-            else
-            {
-                _rotatingFan?.Stop(); // Stop the fan animation
+                isRunning = false;
             }
         }
 
-        private void ToggleRunningState()
+        private void Slider_Speed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!_isRunning)
+            if (spinStoryboard != null)
             {
-                _isRunning = true;
-                Btn_OnOff.Content = "STOP";
-            }
-            else
-            {
-                _isRunning = false;
-                Btn_OnOff.Content = "START";
+                double speed = e.NewValue;
+
+                // Prevent division by zero
+                if (speed <= 0.1) speed = 0.1;
+
+                // Faster slider value = shorter duration
+                double secondsPerRotation = 1.0 / speed;
+
+                foreach (var timeline in spinStoryboard.Children)
+                {
+                    if (timeline is DoubleAnimation anim)
+                    {
+                        anim.Duration = new Duration(System.TimeSpan.FromSeconds(secondsPerRotation));
+                    }
+                }
+
+                if (isRunning)
+                {
+                    // Restart storyboard with new speed
+                    spinStoryboard.Begin(this, true);
+                }
             }
         }
     }
