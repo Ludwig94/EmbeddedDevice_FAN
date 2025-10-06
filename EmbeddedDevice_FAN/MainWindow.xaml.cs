@@ -60,6 +60,7 @@ namespace EmbeddedDevice_FAN
 
         private void InitializeFeatures()
         {
+            LoadSettings();
             // Get storyboard from resources
             spinStoryboard = (Storyboard)this.Resources["SpinFan"];
             _speedTimer = new DispatcherTimer()
