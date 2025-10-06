@@ -1,26 +1,61 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Runtime;
 
 namespace EmbeddedDevice_FAN
 {
+
     public partial class MainWindow : Window
     {
         private string _logFilePath = "";
         private decimal _pendingSpeed;
         private bool isRunning = false;
-        private  Storyboard spinStoryboard;
+        private Storyboard spinStoryboard;
         private DispatcherTimer? _speedTimer;
-        private  ObservableCollection<string>? _eventLog;
+        private ObservableCollection<string>? _eventLog;
+        private DeviceSettings _settings;
+        private string _settingsPath = "";
 
         public MainWindow()
         {
             InitializeComponent();
-            InitializeFeatures();  
+            InitializeFeatures();
+            StartRestServer();
+        }
+
+        private void LoadSettings()
+        {
+            var appDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "EmbeddedDevice");
+            Directory.CreateDirectory(appDir);
+            _settingsPath = Path.Combine(appDir, "settings.json");
+
+            if (File.Exists(_settingsPath))
+            {
+                string json = File.ReadAllText(_settingsPath);
+                _settings = JsonSerializer.Deserialize<DeviceSettings>(json) ?? new DeviceSettings();
+            }
+            else
+            {
+                _settings = new DeviceSettings();
+                SaveSettings();
+            }
+
+            Slider_Speed.Value = (double)_settings.DefaultSpeed;
+        }
+
+        private void SaveSettings()
+        {
+            _settings.DefaultSpeed = _pendingSpeed;
+            string json = JsonSerializer.Serialize(_settings, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_settingsPath, json);
         }
 
         private void InitializeFeatures()
@@ -55,7 +90,7 @@ namespace EmbeddedDevice_FAN
             {
                 File.AppendAllText(_logFilePath, line + Environment.NewLine);
             }
-            catch 
+            catch
             {
 
             }
@@ -114,6 +149,82 @@ namespace EmbeddedDevice_FAN
                 _speedTimer.Stop();
                 _speedTimer.Start();
             }
+        }
+       private async void StartRestServer()
+        {
+            var listener = new HttpListener();
+            listener.Prefixes.Add("http://localhost:5000/");
+            listener.Start();
+            LogMessage("REST server running at http://localhost:5000/");
+
+            _ = Task.Run(async () =>
+            {
+                while (listener.IsListening)
+                {
+                    var context = await listener.GetContextAsync();
+                    string responseMessage = "";
+
+                    string path = context.Request.Url.AbsolutePath.ToLower();
+
+                    switch (path)
+                    {
+                        case "/start":
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (!isRunning) Btn_OnOff_Click(null, null);
+                            });
+                            responseMessage = "Fan started.";
+                            break;
+
+                        case "/stop":
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (isRunning) Btn_OnOff_Click(null, null);
+                            });
+                            responseMessage = "Fan stopped.";
+                            break;
+
+                        case "/speed":
+                            using (var reader = new StreamReader(context.Request.InputStream))
+                            {
+                                string body = await reader.ReadToEndAsync();
+                                if (decimal.TryParse(body, out var newSpeed))
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        Slider_Speed.Value = (double)newSpeed;
+                                    });
+                                    responseMessage = $"Speed set to {newSpeed}";
+                                }
+                                else
+                                {
+                                    responseMessage = "Invalid speed value.";
+                                }
+                            }
+                            break;
+
+                        case "/status":
+                            var status = new
+                            {
+                                running = isRunning,
+                                speed = _pendingSpeed
+                            };
+                            responseMessage = JsonSerializer.Serialize(status);
+                            break;
+
+                        default:
+                            responseMessage = "Unknown command.";
+                            break;
+                    }
+
+                    byte[] buffer = Encoding.UTF8.GetBytes(responseMessage);
+                    context.Response.ContentType = "application/json";
+                    context.Response.ContentLength64 = buffer.Length;
+                    await context.Response.OutputStream.WriteAsync(buffer);
+                    context.Response.Close();
+                }
+            });
+
         }
     }
 }
