@@ -1,14 +1,11 @@
-﻿using System.Net;
+﻿using System.Collections.ObjectModel;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-using System.Runtime;
 
 namespace EmbeddedDevice_FAN
 {
